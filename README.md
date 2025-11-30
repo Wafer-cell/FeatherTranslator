@@ -70,7 +70,7 @@
 
 **外部链接**
 
-<a href="https://featherflow.oss-cn-hangzhou.aliyuncs.com/Translations/translates.xlsx?Expires=1764487736&OSSAccessKeyId=TMP.3KoPSVnyN4thku82f5mkb8BcxZSeySaKKVNgh6LGNjNJzqwuTRtYtquutXsLQy5uUQLSytFbfphtJ13Sj14XPzNzRF1e1Z&Signature=jV%2BOnU%2FUeBdaw%2F381ELH5a9Mmxw%3D">翻译 for 甘えんぼな妹と二人きりいちゃラブ性活</a>
+<a href="https://featherflow.oss-cn-hangzhou.aliyuncs.com/Translations/translates.xlsx">翻译 for 甘えんぼな妹と二人きりいちゃラブ性活</a>
 
 ↑翻译文件戳上面下载↑
 
