@@ -1,0 +1,15 @@
+__pycache__
+.othergames
+.vscode
+build
+dist
+texter_venv
+BeplnEx.zip
+debugging_server.py
+gamepath.yaml
+log.log
+Plugin.zip
+subtitle.spec
+test.py
+test2.py
+translates.xlsx
