@@ -15,13 +15,13 @@ import win32process
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt,QObject, Signal,QRect
 from PySide6.QtUiTools import QUiLoader
-import tqdm
+import win10toast
 
+GLOBAL_TOASTER = win10toast.ToastNotifier()
 DISKS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","S","U","V","W","X","Y","Z"]
 disks = []
 file_count = 10000
 FlagFileCreated = False
-bar = tqdm.tqdm(total=10000, desc="文件已扫描", ncols=100, ascii=True)
 ExecutebaleName = ""
 ProcessName = ""
 xlsx_path = ""
@@ -47,6 +47,10 @@ def setup_logger():
 logger = setup_logger()
 logger.info("已初始化日志系统")
 logger.info("程序启动中...")
+
+def send_notify(text:str,title:str,duration:int = 3,thread:bool = True):
+    GLOBAL_TOASTER.show_toast(title=title,msg=text,duration=duration,threaded=thread)
+    return None
 
 def get_cache_path():
     global xlsx_path
@@ -78,7 +82,7 @@ class Translate:
                 file = path / "translates.xlsx"
             self.file = pandas.read_excel(file,sheet_name="translate")
             self.file_config = pandas.read_excel(file,sheet_name="IdentityData")
-            logger.info("已加载翻译文件")
+            logger.info(f"已加载翻译文件")
         except Exception as e:
             logger.error(f"无法读取翻译文件:{e}")
 
@@ -90,8 +94,18 @@ class Translate:
 trans = Translate()
 config = trans.file_config
 
-ExecutebaleName = config.at[0,"values"]
-ProcessName = config.at[1,"values"]
+ExecutebaleName:str = str(config.at[0,"values"])
+ProcessName:str = str(config.at[1,"values"])
+
+game_name = ExecutebaleName.strip(".")[0]
+logger.info(f"当前加载的翻译文件适配于: {game_name} ")
+check_result = win32gui.MessageBox(0, f"当前加载的翻译文件适配于: {game_name} \n\n请确认这是正确的翻译文件","警告",win32con.MB_YESNO | win32con.MB_ICONINFORMATION)
+if check_result == win32con.IDYES:
+    send_notify("翻译文件已确认","文件确认")
+    logger.info("文件已确认")
+else:
+    logger.warning("用户未确认文件正确,将自动退出")
+    send_notify("请更换正确的翻译文件","提醒")
 
 def process(raw:dict, to_cli:bool = True):
     name:str = raw["name"]
@@ -137,21 +151,17 @@ def get_size():
 def check_file(paths):
     disk_list = paths
     logger.info(f"正在尝试全局扫描游戏主程序...")
+    send_notify("正在定位游戏安装路径...","文件定位")
     for i in range(len(paths)):
         path = disk_list[i]
         logger.info(f"当前查找磁盘:{path}")
-        count = 0
         for filepath,dirname,filename in os.walk(path):
             if "windows" in str(filepath.lower()):
                 pass
             else:
                 for temp in filename:
-                    count += 1
-                    bar.update(1)
-                    if count >= file_count:
-                        count = 0
                     if temp == ExecutebaleName:
-                        bar.clear()
+                        send_notify("已定位到游戏","文件定位")
                         full_path = os.path.join(filepath,temp)
                         return full_path
                     else:
@@ -160,16 +170,6 @@ def check_file(paths):
 
 def extract_plugin(path) -> None:
     source_path = "./Plugin.zip"
-    if not os.path.exists(os.path.join(path,"BepInEx/plugins")):
-        logger.error("无法找到plugin文件夹,将自动启动游戏初始化ModLoader,请在游戏窗口消失后重启程序。")
-        exe_dir = os.path.join(path,ExecutebaleName)
-        os.startfile(exe_dir)
-        time.sleep(5)
-        if check_alive():
-            for proc in psutil.process_iter(['pid']):
-                if proc.info['pid']:
-                    pid = proc.info['pid']
-                    psutil.Process(pid).kill()
     Path = os.path.join(path,"BepInEx/plugins")
     args = f"-Path {source_path} -DestinationPath {Path}"
     cmd = f"powershell.exe -Command Expand-Archive {args}"
@@ -207,7 +207,7 @@ def pull_up_game():
         path = pathlib.Path(exe_dir).parent
         logger.info(f"当前路径:{path}")
         if os.path.exists(os.path.join(path,"winhttp.dll")):
-            logger.info("已检测到Modloader，将正常运行")
+            logger.info("已检测到Modloader,将正常运行")
         else:
             logger.warning("未检测到ModLoader,将自动注入(可能花费几分钟)")
             extract_zip(path)
@@ -328,7 +328,6 @@ def create_overlay():
 
 
 def show_text(window, text):
-    """显示文本 - 这个函数必须在主线程调用"""
     html = f'''
     <div style="
         color: white; 
@@ -362,7 +361,6 @@ def handle_call():
         print(rawdata)
         out = process(raw=rawdata, to_cli=False)
         if out is not None:
-            # 使用信号安全地更新UI
             overlay_signals.update_text.emit(out)
         return flask.jsonify({"code": 200, "status": "awa"})
     except Exception as e:
@@ -370,13 +368,11 @@ def handle_call():
         return flask.jsonify({"code": 404, "status": "man!服务器出问题了"})
 
 if __name__ == "__main__":
-    # 在单独的线程中运行Flask服务器
     def run_flask():
         server.run("127.0.0.1", port=5005, debug=False, use_reloader=False)
 
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.daemon = True
     flask_thread.start()
-    
-    # 运行Qt主循环
     sys.exit(app.exec())
+
