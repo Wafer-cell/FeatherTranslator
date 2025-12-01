@@ -361,7 +361,8 @@ def window_move():
     pos =  get_position()
     if pos:
         px,py,pw,ph = pos
-        Pos = QRect(px,py,int(UI_SIZE[0]*t),int(UI_SIZE[1]*t))
+        #我不知道为什么这里要除以缩放因子，但是这样就是能跑qwq
+        Pos = QRect(int(px/t),int(py/t),int(UI_SIZE[0]*t),int(UI_SIZE[1]*t))
         window.setGeometry(Pos)
 # 初始化悬浮窗
 app, window, overlay_signals = create_overlay()
