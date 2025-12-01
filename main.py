@@ -17,6 +17,7 @@ from PySide6.QtCore import Qt,QObject, Signal,QRect
 from PySide6.QtUiTools import QUiLoader
 import win10toast
 
+UI_SIZE = [256,71]
 GLOBAL_TOASTER = win10toast.ToastNotifier()
 DISKS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","S","U","V","W","X","Y","Z"]
 disks = []
@@ -83,6 +84,10 @@ class Translate:
             self.file = pandas.read_excel(file,sheet_name="translate")
             self.file_config = pandas.read_excel(file,sheet_name="IdentityData")
             logger.info(f"已加载翻译文件")
+        except FileExistsError or AttributeError:
+            send_notify("程序已简单初始化，请将翻译文件放入 “translation_data” 文件夹中并再次启动程序","初始化")
+            os._exit(0)
+
         except Exception as e:
             logger.error(f"无法读取翻译文件:{e}")
 
@@ -91,19 +96,30 @@ class Translate:
             if name == self.file.at[index, "音频"]:
                 logger.info(f"已找到{self.file.at[index, '音频']}对应的翻译文本:{self.file.at[index, '翻译']}")
                 return self.file.at[index, "翻译"]
+            
+file = get_cache_path()
 trans = Translate()
-config = trans.file_config
+
+try:
+    config = trans.file_config
+except AttributeError:
+    time.sleep(0.1)
+    send_notify("程序已简单初始化，请将翻译文件放入 “translation_data” 文件夹中并再次启动程序","初始化")
+    time.sleep(0.2)
+    os._exit(0)
 
 ExecutebaleName:str = str(config.at[0,"values"])
 ProcessName:str = str(config.at[1,"values"])
 
-game_name = ExecutebaleName.strip(".")[0]
+game_name = os.path.splitext(ExecutebaleName)[0]
 logger.info(f"当前加载的翻译文件适配于: {game_name} ")
 check_result = win32gui.MessageBox(0, f"当前加载的翻译文件适配于: {game_name} \n\n请确认这是正确的翻译文件","警告",win32con.MB_YESNO | win32con.MB_ICONINFORMATION)
 if check_result == win32con.IDYES:
+    time.sleep(0.1)
     send_notify("翻译文件已确认","文件确认")
     logger.info("文件已确认")
 else:
+    time.sleep(0.1)
     logger.warning("用户未确认文件正确,将自动退出")
     send_notify("请更换正确的翻译文件","提醒")
 
@@ -198,7 +214,6 @@ def pull_up_game():
     global path
     w,h = get_size()
     path = pathlib.Path(__file__).resolve().parent
-    file = get_cache_path()
     try:
         with open(file, "r", encoding="utf-8") as f:
             dir = list(yaml.safe_load_all(f))
@@ -236,7 +251,8 @@ logger.info("字幕系统初始化完成")
 
 if pull_up_game():
     logger.info("正在拉起游戏...")
-    t = int(w/1920)
+    #获取缩放因子
+    t = float(w/1920)
     time.sleep(2)
     logger.info("已拉起游戏主进程")
 else:
@@ -340,11 +356,12 @@ def show_text(window, text):
     ">{text}</div>
     '''
     window.textBrowser.setHtml(html)
+
 def window_move():
     pos =  get_position()
     if pos:
         px,py,pw,ph = pos
-        Pos = QRect(int(px/t),int(py/t),pw,ph)
+        Pos = QRect(px,py,int(UI_SIZE[0]*t),int(UI_SIZE[1]*t))
         window.setGeometry(Pos)
 # 初始化悬浮窗
 app, window, overlay_signals = create_overlay()
