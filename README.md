@@ -62,6 +62,7 @@ exe内置**BleedingEdge**版本的BepInEx Modloader   版本号:**x64-6.0.0-be.7
 千万千万记得把BepInEx的压缩包重名名成**BeplnEx.zip**！！！是**BeplnEx**不是**BepInEx**！！！是**l(小写L)**不是**I(大写I，虽然人家本来就是I)**
 
 **(不存在的)FAQ**
+
 Q1:知道有拼写错误为什么不改正捏
 
 A1:w.....也许未来会改的吧qwq
