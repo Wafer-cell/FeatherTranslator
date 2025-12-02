@@ -47,13 +47,15 @@ exe内置**BleedingEdge**版本的BepInEx Modloader   版本号:**x64-6.0.0-be.7
 
 安装**requirements.txt**里的依赖
 
-请去BepInExBuild网页<a href="https://builds.bepinex.dev/projects/bepinex_be">[指路]</a>下载对应版本modloader解压并放进你的游戏目录
+下载源码
 
-再把plugin.zip解压放进对应文件夹
+再请去BepInExBuild网页<a href="https://builds.bepinex.dev/projects/bepinex_be">[指路]</a>下载对应版本modloader并把压缩包放进Python源码所在目录
 
-*其实有个懒人方案，下载all-in-one的exe文件，它会帮你解决modloader和plugin的问题的awa*
+再把plugin.zip放进Python源码所在目录(这两条我为什么不一起写？)
 
 最后执行Python源码
+
+*其实有个懒人方案，下载all-in-one的exe文件，它会帮你解决modloader和plugin的问题的awa*
 
 ## **碎碎念**
 
