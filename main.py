@@ -15,10 +15,9 @@ import win32process
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt,QObject, Signal,QRect
 from PySide6.QtUiTools import QUiLoader
-import win10toast
+#import win10toast
 
 UI_SIZE = [256,71]
-GLOBAL_TOASTER = win10toast.ToastNotifier()
 DISKS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","S","U","V","W","X","Y","Z"]
 disks = []
 file_count = 10000
@@ -49,8 +48,16 @@ logger = setup_logger()
 logger.info("已初始化日志系统")
 logger.info("程序启动中...")
 
+# try:
+#     GLOBAL_TOASTER = win10toast.ToastNotifier()
+# except Exception:
+#     logger.error("Toaster加载失败,将使用win32库实现弹窗。")
+
 def send_notify(text:str,title:str,duration:int = 3,thread:bool = True):
-    GLOBAL_TOASTER.show_toast(title=title,msg=text,duration=duration,threaded=thread)
+#     try:
+#         GLOBAL_TOASTER.show_toast(title=title,msg=text,duration=duration,threaded=thread)
+#     except Exception:
+    win32gui.MessageBox(0,text,title,win32con.IDOK)
     return None
 
 def get_cache_path():
@@ -238,7 +245,7 @@ def pull_up_game():
             config = {"path": path}
             with open(get_cache_path(),"w",encoding="utf-8") as f:
                 yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
-                logger.warning("已建立缓存，程序将自动重启")
+                logger.warning("已建立缓存，请手动重启程序awa")
                 os._exit(0)
         elif path == "Not found":
             logger.error("无法自动查找游戏路径")
