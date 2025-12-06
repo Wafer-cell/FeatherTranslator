@@ -101,7 +101,7 @@ A3:真的有人会在意吗....qmq
 
 **外部链接**
 
-<a href="https://featherflow.oss-cn-hangzhou.aliyuncs.com/Translations/translates.xlsx">翻译 for 甘えんぼな妹と二人きりいちゃラブ性活</a>
+<a href="">翻译 for 甘えんぼな妹と二人きりいちゃラブ性活</a>
 
 ↑翻译文件戳上面下载↑
 
