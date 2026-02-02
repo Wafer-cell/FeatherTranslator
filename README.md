@@ -40,7 +40,7 @@ exe内置**BleedingEdge**版本的BepInEx Modloader   版本号:**x64-6.0.0-be.7
 
 <a href="https://github.com/BepInEx/BepInEx">[项目指路]</a>
 
-本项目依赖原版游戏运行，游戏本体请**自行准备**，本人不提供任何**非官方**的**下载链接**!!!
+本项目依赖原版游戏运行，记得准备游戏本体。
 
 如果你遇到了未知原因的程序错误，请提个issue。(虽然我自己也不知道什么时候会看...qwq)
 
