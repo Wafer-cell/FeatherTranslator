@@ -15,7 +15,7 @@ import win32process
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt,QObject, Signal,QRect
 from PySide6.QtUiTools import QUiLoader
-#import win10toast
+import win10toast
 
 UI_SIZE = [256,71]
 DISKS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","S","U","V","W","X","Y","Z"]
@@ -26,6 +26,7 @@ ExecutebaleName = ""
 ProcessName = ""
 xlsx_path = ""
 server = flask.Flask(__name__)
+icon_path = ""
 
 path = None
 w = None
@@ -48,22 +49,25 @@ logger = setup_logger()
 logger.info("已初始化日志系统")
 logger.info("程序启动中...")
 
-# try:
-#     GLOBAL_TOASTER = win10toast.ToastNotifier()
-# except Exception:
-#     logger.error("Toaster加载失败,将使用win32库实现弹窗。")
+try:
+    GLOBAL_TOASTER = win10toast.ToastNotifier()
+except Exception:
+    logger.error("Toaster加载失败,将使用win32库实现弹窗。")
 
 def send_notify(text:str,title:str,duration:int = 3,thread:bool = True):
-#     try:
-#         GLOBAL_TOASTER.show_toast(title=title,msg=text,duration=duration,threaded=thread)
-#     except Exception:
-    win32gui.MessageBox(0,text,title,win32con.IDOK)
+    try:
+        GLOBAL_TOASTER.show_toast(title=title,msg=text,duration=duration,icon_path=icon_path,threaded=thread)
+    except Exception:
+        win32gui.MessageBox(0,text,title,win32con.IDOK)
     return None
 
 def get_cache_path():
-    global xlsx_path
+    global xlsx_path,icon_path
     if getattr(sys, 'frozen', False):
         BASE_PATH = os.path.dirname(sys.executable)
+        base_path = sys._MEIPASS
+        #初始化图标，win10toast需要绝对路径
+        icon_path = pathlib.Path(base_path).joinpath("icon.ico")
         xlsx_file = pathlib.Path(BASE_PATH).joinpath("translation_data")
         xlsx_file.mkdir(exist_ok=True)
         appdata_dir = pathlib.Path(os.environ['APPDATA'])
