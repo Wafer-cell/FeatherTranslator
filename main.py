@@ -74,10 +74,10 @@ def get_cache_path():
         cache_dir = appdata_dir / "FeatherTranslator"
         cache_dir.mkdir(exist_ok=True)
         xlsx_path = xlsx_file / "translates.xlsx"
-        cache_file = cache_dir / "gamepath.yaml"       
+        cache_file = cache_dir / "gamepaths.yaml"       
         return cache_file
     else:
-        cache_file = pathlib.Path(__file__).parent / "gamepath.yaml"
+        cache_file = pathlib.Path(__file__).parent / "gamepaths.yaml"
         return cache_file
     
 # 创建信号类用于线程间通信
@@ -219,8 +219,8 @@ def locate_game():
         return full_path
     else:
         return "Not found"
-
-def pull_up_game():
+    
+def pull_up_game() -> bool:
     global w
     global path
     w,h = get_size()
@@ -228,8 +228,9 @@ def pull_up_game():
     try:
         with open(file, "r", encoding="utf-8") as f:
             dir = list(yaml.safe_load_all(f))
-            path_dir = dir[0]["path"]
+            path_dir = dir[0][game_name]
             exe_dir = os.path.join(path_dir)
+            logger.info("正在使用已缓存的游戏路径")
         path = pathlib.Path(exe_dir).parent
         logger.info(f"当前路径:{path}")
         if os.path.exists(os.path.join(path,"winhttp.dll")):
@@ -246,11 +247,18 @@ def pull_up_game():
         logger.warning("无法找到游戏路径缓存，将尝试自动定位游戏并建立缓存")
         path = locate_game()
         if path and path != "Not found":
-            config = {"path": path}
-            with open(get_cache_path(),"w",encoding="utf-8") as f:
-                yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
-                logger.warning("已建立缓存，请手动重启程序awa")
-                os._exit(0)
+            config = {game_name: path}
+            existing_data = {}
+            if os.path.exists(file):
+                with open(file, "r", encoding="utf-8") as f:
+                    data = yaml.safe_load(f)
+                    if data:
+                        existing_data = data
+            existing_data.update(config)
+            with open(file, "w", encoding="utf-8") as f:
+                yaml.dump(existing_data, f, default_flow_style=False, allow_unicode=True)
+            logger.warning("已建立缓存，请手动重启程序awa")
+            os._exit(0)
         elif path == "Not found":
             logger.error("无法自动查找游戏路径")
 
