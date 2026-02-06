@@ -6,7 +6,7 @@ dist
 texter_venv
 BeplnEx.zip
 debugging_server.py
-gamepath.yaml
+gamepaths.yaml
 log.log
 Plugin.zip
 subtitle.spec
