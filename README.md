@@ -103,7 +103,7 @@ A3:真的有人会在意吗....qmq
 
 ## **外部链接**
 
-如果嫌下载太慢可选<a href="https://swap.lanzoue.com/iAmos3hykc4b">蓝奏链接(latest)</a>：
+如果嫌下载太慢可选<a href="https://swap.lanzoue.com/b019vny4ba">蓝奏链接</a>：
 
 密码：**nya~**
 
