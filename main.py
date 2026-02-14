@@ -18,7 +18,7 @@ from PySide6.QtUiTools import QUiLoader
 import win10toast
 
 UI_SIZE = [256,71]
-DISKS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","S","U","V","W","X","Y","Z"]
+DISKS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 disks = []
 file_count = 10000
 FlagFileCreated = False
